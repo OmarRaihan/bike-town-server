@@ -36,6 +36,7 @@ async function run() {
 
 run().catch(console.dir);
 
+
 // ROOT / Blank API
 app.get("/", (req, res) => {
   res.send("Running Bike Town Server");
