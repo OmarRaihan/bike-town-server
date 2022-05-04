@@ -37,13 +37,13 @@ async function run() {
     });
 
     // POST API ||
-    app.post('/bike', async(req, res) =>{
+    app.post("/bike", async (req, res) => {
       const newItem = req.body;
       const result = await bikeCollection.insertOne(newItem);
       res.send(result);
-    })
+    });
 
-    // DELETE API || Inventory  
+    // DELETE API || Inventory
     app.delete("/bike/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
@@ -58,34 +58,50 @@ async function run() {
       const result = await bikeCollection.findOne(query);
       res.send(result);
     });
-  } 
-  finally {
+  } finally {
   }
 }
 
 run().catch(console.dir);
 
-
 // -----------------------------------------------
 // Function for Kit
-async function runKit(){
-  try{
+async function runKit() {
+  try {
     await client.connect();
     const kitCollection = client.db("bikeUser").collection("kit");
 
-     // API for Kit Collection
-     app.get("/kit", async (req, res) => {
+    // API for Kit Collection
+    app.get("/kit", async (req, res) => {
       const query = {};
       const cursor = kitCollection.find(query);
-      const bikes = await cursor.toArray();
-      res.send(bikes);
+      const kits = await cursor.toArray();
+      res.send(kits);
     });
-  }
-  finally{
-
+  } finally {
   }
 }
 runKit().catch(console.dir);
+// ---------------------------------------------------
+
+// -----------------------------------------------
+// Function for Parts
+async function runParts() {
+  try {
+    await client.connect();
+    const partsCollection = client.db("bikeUser").collection("parts");
+
+    // API for Spares & Parts Collection
+    app.get("/parts", async (req, res) => {
+      const query = {};
+      const cursor = partsCollection.find(query);
+      const parts = await cursor.toArray();
+      res.send(parts);
+    });
+  } finally {
+  }
+}
+runParts().catch(console.dir);
 // ---------------------------------------------------
 
 // ROOT / Blank API
