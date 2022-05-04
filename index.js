@@ -65,6 +65,29 @@ async function run() {
 
 run().catch(console.dir);
 
+
+// -----------------------------------------------
+// Function for Kit
+async function runKit(){
+  try{
+    await client.connect();
+    const kitCollection = client.db("bikeUser").collection("kit");
+
+     // API for Kit Collection
+     app.get("/kit", async (req, res) => {
+      const query = {};
+      const cursor = kitCollection.find(query);
+      const bikes = await cursor.toArray();
+      res.send(bikes);
+    });
+  }
+  finally{
+
+  }
+}
+runKit().catch(console.dir);
+// ---------------------------------------------------
+
 // ROOT / Blank API
 app.get("/", (req, res) => {
   res.send("Running Bike Town Server");
