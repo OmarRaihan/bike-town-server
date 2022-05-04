@@ -10,11 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
 // Connect with MongoDB
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.9vvtv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-
 
 // Async Function
 async function run() {
@@ -31,28 +29,41 @@ async function run() {
     });
 
     // API || All Bike by ID
-    app.get('/bike/:id', async(req, res) =>{
+    app.get("/bike/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id: ObjectId(id)};
+      const query = { _id: ObjectId(id) };
       const bike = await bikeCollection.findOne(query);
       res.send(bike);
     });
 
-    // Delete Inventory
-    app.delete('/manage/:id', async(req, res) =>{
-      const id = req.params.id;
-      const query = {_id: ObjectId(id)};
-      const result = await bikeCollection.deleteOne(query);
+    // POST API ||
+    app.post('/bike', async(req, res) =>{
+      const newItem = req.body;
+      const result = await bikeCollection.insertOne(newItem);
       res.send(result);
     })
+
+    // Delete Inventory || API
+    app.delete("/bike/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await bikeCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // Update Quantity || API
+    app.get("/bike/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await bikeCollection.findOne(query);
+      res.send(result);
+    });
   } 
   finally {
-
   }
 }
 
 run().catch(console.dir);
-
 
 // ROOT / Blank API
 app.get("/", (req, res) => {
