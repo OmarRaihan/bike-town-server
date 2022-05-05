@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // const ObjectId = require('mongodb').ObjectId;
 require("dotenv").config();
@@ -22,7 +23,8 @@ async function run() {
 
     // API for Bike Collection
     app.get("/bike", async (req, res) => {
-      const query = {};
+      const email = req.query.email;
+      const query = { email: email };
       const cursor = bikeCollection.find(query);
       const bikes = await cursor.toArray();
       res.send(bikes);
@@ -36,7 +38,7 @@ async function run() {
       res.send(bike);
     });
 
-    // POST API ||
+    // POST API || Add New Items
     app.post("/bike", async (req, res) => {
       const newItem = req.body;
       const result = await bikeCollection.insertOne(newItem);
@@ -63,15 +65,23 @@ async function run() {
       const result = await bikeCollection.updateOne(filter, updateDoc, options);
       res.send(result);
 
+      // AUTH || JWT Token
+      app.post("/login", async (req, res) => {
+        const user = req.body;
+        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+          expiresIn: "1d",
+        });
+        res.send(accessToken);
+      });
+
     });
   } 
   finally {
-
+    
   }
 }
 
 run().catch(console.dir);
-
 
 // -----------------------------------------------
 // Function for Kit
