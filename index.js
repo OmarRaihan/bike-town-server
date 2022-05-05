@@ -54,15 +54,24 @@ async function run() {
     // Update Quantity || API
     app.get("/bike/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: ObjectId(id) };
-      const result = await bikeCollection.findOne(query);
+      const data = req.body;
+      const filter = { _id: ObjectId(id) };
+      // const query = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = { updateQuantity: data.updateQuantity };
+
+      const result = await bikeCollection.updateOne(filter, updateDoc, options);
       res.send(result);
+
     });
-  } finally {
+  } 
+  finally {
+
   }
 }
 
 run().catch(console.dir);
+
 
 // -----------------------------------------------
 // Function for Kit
