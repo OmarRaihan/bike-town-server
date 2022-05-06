@@ -38,6 +38,7 @@ async function run() {
   try {
     await client.connect();
     const bikeCollection = client.db("bikeUser").collection("bike");
+    const newItemCollection = client.db("bikeUser").collection("newItem");
 
     // API for Bike Collection
     app.get("/bike", async (req, res) => {
@@ -55,20 +56,39 @@ async function run() {
       res.send(bike);
     });
 
+    // // POST API || Add New Items
+    // app.post("/bike", verifyJWT, async (req, res) => {
+    //   const decodedEmail = req.decoded.email;
+    //   const email = req.query.email;
+    //   if (email === decodedEmail) {
+    //     const query = { email: email };
+    //     const newItem = req.body;
+    //     const result = await bikeCollection.insertOne(newItem, query);
+    //     res.send(result);
+    //   }
+    //   else{
+    //     res.status(403).send({ message: "Forbidden Access" });
+    //   }
+    // });
+
+
     // POST API || Add New Items
-    app.post("/bike", verifyJWT, async (req, res) => {
-      const decodedEmail = req.decoded.email;
-      const email = req.query.email;
-      if (email === decodedEmail) {
-        const query = { email: email };
-        const newItem = req.body;
-        const result = await bikeCollection.insertOne(newItem, query);
-        res.send(result);
-      }
-      else{
-        res.status(403).send({ message: "Forbidden Access" });
-      }
+    // app.post("/bike", verifyJWT, async (req, res) => {
+    //   const query = {};
+    //   const newItem = req.body;
+    //   const result = await bikeCollection.insertOne(newItem, query);
+    //   res.send(result);
+    // });
+
+
+    // POST API || Add New Items
+    app.post("/newItem", verifyJWT, async (req, res) => {
+      // const query = {};
+      const newItem = req.body;
+      const result = await newItemCollection.insertOne(newItem);
+      res.send(result);
     });
+    
 
     // DELETE API || Inventory
     app.delete("/bike/:id", async (req, res) => {
@@ -98,7 +118,9 @@ async function run() {
         res.send(accessToken);
       });
     });
-  } finally {
+
+  } 
+  finally {
   }
 }
 
