@@ -15,6 +15,16 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.9vvtv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+// Function for JWT
+function verifyJWT(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send({ message: "Unauthorized Access" });
+  }
+  console.log("Inside VerifyJWT", authHeader);
+  next();
+}
+
 // Async Function
 async function run() {
   try {
@@ -30,8 +40,8 @@ async function run() {
       res.send(bikes);
     });
 
-    // API || All Bike by ID
-    app.get("/bike/:id", async (req, res) => {
+    // API || Manage by ID
+    app.get("/bike/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const bike = await bikeCollection.findOne(query);
@@ -72,12 +82,9 @@ async function run() {
           expiresIn: "1d",
         });
         res.send(accessToken);
-      });
-
-    });
-  } 
-  finally {
-    
+      })
+    })
+  } finally {
   }
 }
 
