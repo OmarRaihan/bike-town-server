@@ -82,7 +82,7 @@ async function run() {
 
 
     // POST API || Add New Items
-    app.post("/newItem", verifyJWT, async (req, res) => {
+    app.post("/newItem", async (req, res) => {
       // const query = {};
       const newItem = req.body;
       const result = await newItemCollection.insertOne(newItem);
