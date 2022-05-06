@@ -21,7 +21,15 @@ function verifyJWT(req, res, next) {
   if (!authHeader) {
     return res.status(401).send({ message: "Unauthorized Access" });
   }
-  console.log("Inside VerifyJWT", authHeader);
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).send({ message: "Forbidden Access" });
+    }
+    console.log("decoded", decoded);
+    req.decoded = decoded;
+  });
+  // console.log("Inside VerifyJWT", authHeader);
   next();
 }
 
@@ -33,8 +41,7 @@ async function run() {
 
     // API for Bike Collection
     app.get("/bike", async (req, res) => {
-      const email = req.query.email;
-      const query = { email: email };
+      const query = {};
       const cursor = bikeCollection.find(query);
       const bikes = await cursor.toArray();
       res.send(bikes);
@@ -50,9 +57,17 @@ async function run() {
 
     // POST API || Add New Items
     app.post("/bike", verifyJWT, async (req, res) => {
-      const newItem = req.body;
-      const result = await bikeCollection.insertOne(newItem);
-      res.send(result);
+      const decodedEmail = req.decoded.email;
+      const email = req.query.email;
+      if (email === decodedEmail) {
+        const query = { email: email };
+        const newItem = req.body;
+        const result = await bikeCollection.insertOne(newItem, query);
+        res.send(result);
+      }
+      else{
+        res.status(403).send({ message: "Forbidden Access" });
+      }
     });
 
     // DELETE API || Inventory
@@ -68,7 +83,6 @@ async function run() {
       const id = req.params.id;
       const data = req.body;
       const filter = { _id: ObjectId(id) };
-      // const query = { _id: ObjectId(id) };
       const options = { upsert: true };
       const updateDoc = { updateQuantity: data.updateQuantity };
 
@@ -82,8 +96,8 @@ async function run() {
           expiresIn: "1d",
         });
         res.send(accessToken);
-      })
-    })
+      });
+    });
   } finally {
   }
 }
