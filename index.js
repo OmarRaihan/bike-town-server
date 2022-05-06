@@ -41,7 +41,7 @@ async function run() {
     });
 
     // API || Manage by ID
-    app.get("/bike/:id", verifyJWT, async (req, res) => {
+    app.get("/bike/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const bike = await bikeCollection.findOne(query);
@@ -49,7 +49,7 @@ async function run() {
     });
 
     // POST API || Add New Items
-    app.post("/bike", async (req, res) => {
+    app.post("/bike", verifyJWT, async (req, res) => {
       const newItem = req.body;
       const result = await bikeCollection.insertOne(newItem);
       res.send(result);
