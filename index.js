@@ -49,7 +49,7 @@ async function run() {
 
     // API || Manage by ID
     app.get("/bike/:id", async (req, res) => {
-      const id = req.params.id;
+      const id = (req.params.id).trim();
       const query = { _id: ObjectId(id) };
       const bike = await bikeCollection.findOne(query);
       res.send(bike);
@@ -70,7 +70,6 @@ async function run() {
     //   }
     // });
 
-
     // POST API || Add New Items
     // app.post("/bike", verifyJWT, async (req, res) => {
     //   const query = {};
@@ -79,14 +78,12 @@ async function run() {
     //   res.send(result);
     // });
 
-
     // POST API || Add New Items || bike Collection
     app.post("/bike", async (req, res) => {
       const newItem = req.body;
       const result = await bikeCollection.insertOne(newItem);
       res.send(result);
     });
-
 
     // POST API || Add New Items || newItem Collection
     app.post("/newItem", async (req, res) => {
@@ -96,46 +93,58 @@ async function run() {
     });
 
     // GET API || Add New Items || myItem
-    app.get('/newItem', async(req, res) =>{
+    app.get("/newItem", async (req, res) => {
       const email = req.body.email;
-      const query = {email: email};
+      const query = { email: email };
       const cursor = newItemCollection.find(query);
       const newItems = await cursor.toArray();
       res.send(newItems);
-    })
-    
+    });
+
+    // Update Quantity || API
+    app.put("/bike/:id", async (req, res) => {
+      const id = (req.params.id).trim();
+      const product = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          quantity: product.quantity,
+        },
+      };
+      const result = await bikeCollection.updateOne(filter, updatedDoc, options);
+      res.send(result);
+    });
 
     // DELETE API || Inventory
     app.delete("/bike/:id", async (req, res) => {
-      const id = req.params.id;
+      const id = (req.params.id).trim();
       const query = { _id: ObjectId(id) };
       const result = await bikeCollection.deleteOne(query);
       res.send(result);
     });
 
     // Update Quantity || API
-    app.get("/bike/:id", async (req, res) => {
-      const id = req.params.id;
-      const data = req.body;
-      const filter = { _id: ObjectId(id) };
-      const options = { upsert: true };
-      const updateDoc = { updateQuantity: data.updateQuantity };
+    // app.get("/bike/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const data = req.body;
+    //   const filter = { _id: ObjectId(id) };
+    //   const options = { upsert: true };
+    //   const updateDoc = { updateQuantity: data.updateQuantity };
 
-      const result = await bikeCollection.updateOne(filter, updateDoc, options);
-      res.send(result);
+    //   const result = await bikeCollection.updateOne(filter, updateDoc, options);
+    //   res.send(result);
+    // });
 
-      // // AUTH || JWT Token
-      // app.post("/login", async (req, res) => {
-      //   const user = req.body;
-      //   const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-      //     expiresIn: "1d",
-      //   });
-      //   res.send(accessToken);
-      // });
-    });
-
-  } 
-  finally {
+    // // AUTH || JWT Token
+    // app.post("/login", async (req, res) => {
+    //   const user = req.body;
+    //   const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    //     expiresIn: "1d",
+    //   });
+    //   res.send(accessToken);
+    // });
+  } finally {
   }
 }
 
