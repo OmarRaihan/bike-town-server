@@ -49,7 +49,7 @@ async function run() {
 
     // API || Manage by ID
     app.get("/bike/:id", async (req, res) => {
-      const id = (req.params.id).trim();
+      const id = req.params.id.trim();
       const query = { _id: ObjectId(id) };
       const bike = await bikeCollection.findOne(query);
       res.send(bike);
@@ -78,13 +78,6 @@ async function run() {
     //   res.send(result);
     // });
 
-    // POST API || Add New Items || bike Collection
-    app.post("/bike", async (req, res) => {
-      const newItem = req.body;
-      const result = await bikeCollection.insertOne(newItem);
-      res.send(result);
-    });
-
     // POST API || Add New Items || newItem Collection
     app.post("/newItem", async (req, res) => {
       const newItem = req.body;
@@ -94,16 +87,24 @@ async function run() {
 
     // GET API || Add New Items || myItem
     app.get("/newItem", async (req, res) => {
-      const email = req.body.email;
+      const email = req?.body?.email;
       const query = { email: email };
-      const cursor = newItemCollection.find(query);
+      const cursor = bikeCollection.find(query);
       const newItems = await cursor.toArray();
-      res.send(newItems);
+      res.json(newItems);
     });
+
+    // POST API || Add New Bikes || bike Collection
+    app.post("/bike", async (req, res) => {
+      const newBike = req.body;
+      const result = await bikeCollection.insertOne(newBike);
+      res.send(result);
+    });
+
 
     // Update Quantity || API
     app.put("/bike/:id", async (req, res) => {
-      const id = (req.params.id).trim();
+      const id = req.params.id;
       const product = req.body;
       const filter = { _id: ObjectId(id) };
       const options = { upsert: true };
@@ -118,12 +119,11 @@ async function run() {
 
     // DELETE API || Inventory
     app.delete("/bike/:id", async (req, res) => {
-      const id = (req.params.id).trim();
+      const id = req.params.id.trim();
       const query = { _id: ObjectId(id) };
       const result = await bikeCollection.deleteOne(query);
       res.send(result);
     });
-
 
     // // AUTH || JWT Token
     // app.post("/login", async (req, res) => {
