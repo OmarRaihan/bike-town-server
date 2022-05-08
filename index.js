@@ -70,13 +70,6 @@ async function run() {
     //   }
     // });
 
-    // POST API || Add New Items
-    // app.post("/bike", verifyJWT, async (req, res) => {
-    //   const query = {};
-    //   const newItem = req.body;
-    //   const result = await bikeCollection.insertOne(newItem);
-    //   res.send(result);
-    // });
 
     // POST API || Add New Items || newItem Collection
     app.post("/newItem", async (req, res) => {
