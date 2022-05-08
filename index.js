@@ -117,13 +117,6 @@ async function run() {
       const result = await bikeCollection.deleteOne(query);
       res.send(result);
     });
-    // // DELETE API || Inventory
-    // app.delete("/newItem/:id", async (req, res) => {
-    //   const id = req.params.id.trim();
-    //   const query = { _id: ObjectId(id) };
-    //   const result = await bikeCollection.deleteOne(query);
-    //   res.send(result);
-    // });
 
     // // AUTH || JWT Token
     // app.post("/login", async (req, res) => {
